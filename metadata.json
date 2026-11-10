@@ -1,0 +1,6 @@
+{
+  "name": "EARN4YOU - Premium Investment & Task Earning Platform",
+  "description": "Professional VIP investment, daily 30-second YouTube task management, multi-tier referral rewards, and secure Easypaisa/JazzCash wallet system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
