@@ -299,25 +299,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Auth Functions with Firebase Auth + Realtime DB Sync
   const login = async (email: string, password?: string) => {
     try {
-      // Special check for preset admin
-      if (email.toLowerCase() === 'syedumair56300@gmail.com' || email.toLowerCase() === 'admin@earn4you.com' || email.toLowerCase() === 'syedhumyiar@gmail.com') {
-        const adminFound = users.find(u => u.email.toLowerCase() === email.toLowerCase()) || INITIAL_ADMIN_USER;
-        if (password && password !== 'admin' && adminFound.password && password !== adminFound.password) {
-          return { success: false, message: 'Incorrect password entered.' };
-        }
-        setCurrentUser(adminFound);
-        return { success: true, message: `Welcome back, ${adminFound.name}!` };
-      }
+      const SUPER_ADMIN_UID = 'khqFmOg0rlc4TeCbEyaGG1E3sOn2';
+      const SUPER_ADMIN_EMAIL = 'syedumair56300@gmail.com';
 
-      // Try Firebase Auth
+      let firebaseUserUid = '';
       if (password) {
         try {
-          await signInWithEmailAndPassword(auth, email, password);
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          firebaseUserUid = cred.user.uid;
         } catch (fbErr) {
-          console.warn('Firebase Auth login fallback:', fbErr);
+          console.warn('Firebase Auth login notice:', fbErr);
         }
       }
 
+      const isSuperAdmin =
+        email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() ||
+        firebaseUserUid === SUPER_ADMIN_UID;
+
+      if (isSuperAdmin) {
+        const adminUser: User = {
+          id: SUPER_ADMIN_UID,
+          name: 'Super Admin',
+          email: SUPER_ADMIN_EMAIL,
+          role: 'admin',
+          referralCode: 'E4UADMIN',
+          createdAt: '2026-01-01T00:00:00Z',
+          status: 'active',
+          accountDetails: {
+            easypaisaNumber: '0304-9871234',
+            jazzcashNumber: '0321-4567890',
+            accountHolderName: 'EARN4YOU Admin'
+          }
+        };
+        setCurrentUser(adminUser);
+        return { success: true, message: 'Welcome back, Super Admin!' };
+      }
+
+      // Normal user authentication
       const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
       if (!found) {
         return { success: false, message: 'No account registered with this email address.' };
@@ -329,8 +347,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return { success: false, message: 'Incorrect password entered.' };
       }
 
-      setCurrentUser(found);
-      return { success: true, message: `Welcome back, ${found.name}!` };
+      // Ensure normal users never receive admin role
+      const normalUser: User = {
+        ...found,
+        role: 'user'
+      };
+
+      setCurrentUser(normalUser);
+      return { success: true, message: `Welcome back, ${normalUser.name}!` };
     } catch (err: any) {
       return { success: false, message: err.message || 'Authentication error occurred.' };
     }
