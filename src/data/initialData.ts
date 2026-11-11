@@ -205,7 +205,7 @@ export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
 export const INITIAL_ADMIN_USER: User = {
   id: 'i9ajhjk1xFYNGOL6mFsEyZOL5GY2',
   name: 'Super Admin',
-  email: 'admin@earn4you.com',
+  email: 'syedhumyiar@gmail.com',
   password: 'admin',
   role: 'admin',
   referralCode: 'E4UADMIN',

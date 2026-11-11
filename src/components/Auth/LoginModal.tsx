@@ -41,7 +41,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   const fillQuickDemo = (role: 'user' | 'admin') => {
     if (role === 'admin') {
-      setEmail('admin@earn4you.com');
+      setEmail('syedhumyiar@gmail.com');
       setPassword('admin');
     } else {
       setEmail('user@earn4you.com');
