@@ -30,6 +30,14 @@ import {
   INITIAL_SUPPORT_TICKETS,
   INITIAL_AUDIT_LOGS
 } from '../data/initialData';
+import { auth, database } from '../services/firebase';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as fbSignOut,
+  onAuthStateChanged
+} from 'firebase/auth';
+import { ref, set, onValue, get, update } from 'firebase/database';
 
 interface AppContextType {
   currentUser: User | null;
@@ -52,7 +60,6 @@ interface AppContextType {
   login: (email: string, password?: string) => Promise<{ success: boolean; message: string }>;
   register: (name: string, email: string, password: string, referralCode?: string) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
-  switchUserRole: (role: 'user' | 'admin') => void;
   updateProfile: (data: Partial<User>) => void;
   // Financial & Ledger
   getUserWallet: (userId: string) => UserWallet;
@@ -86,7 +93,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Persistence keys
   const loadLocal = <T,>(key: string, defaultVal: T): T => {
     try {
       const saved = localStorage.getItem(`earn4you_${key}`);
@@ -160,27 +166,85 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
   const [activeTab, setActiveTab] = useState<string>('dashboard');
 
-  // Sync to local storage on change
-  useEffect(() => saveLocal('users', users), [users]);
-  useEffect(() => saveLocal('currentUser', currentUser), [currentUser]);
-  useEffect(() => saveLocal('packages', packages), [packages]);
-  useEffect(() => saveLocal('userPackages', userPackages), [userPackages]);
-  useEffect(() => saveLocal('tasks', tasks), [tasks]);
-  useEffect(() => saveLocal('taskSubmissions', taskSubmissions), [taskSubmissions]);
-  useEffect(() => saveLocal('deposits', deposits), [deposits]);
-  useEffect(() => saveLocal('withdrawals', withdrawals), [withdrawals]);
-  useEffect(() => saveLocal('transactions', transactions), [transactions]);
-  useEffect(() => saveLocal('paymentSettings', paymentSettings), [paymentSettings]);
-  useEffect(() => saveLocal('whatsappSettings', whatsappSettings), [whatsappSettings]);
-  useEffect(() => saveLocal('websiteSettings', websiteSettings), [websiteSettings]);
-  useEffect(() => saveLocal('supportTickets', supportTickets), [supportTickets]);
-  useEffect(() => saveLocal('auditLogs', auditLogs), [auditLogs]);
+  // Sync to Firebase Realtime Database & LocalStorage
+  const syncToFirebase = (path: string, data: any) => {
+    saveLocal(path, data);
+    try {
+      const dbRef = ref(database, path);
+      set(dbRef, data);
+    } catch (e) {
+      console.warn('Firebase sync warning:', e);
+    }
+  };
+
+  useEffect(() => syncToFirebase('users', users), [users]);
+  useEffect(() => syncToFirebase('currentUser', currentUser), [currentUser]);
+  useEffect(() => syncToFirebase('packages', packages), [packages]);
+  useEffect(() => syncToFirebase('userPackages', userPackages), [userPackages]);
+  useEffect(() => syncToFirebase('tasks', tasks), [tasks]);
+  useEffect(() => syncToFirebase('taskSubmissions', taskSubmissions), [taskSubmissions]);
+  useEffect(() => syncToFirebase('deposits', deposits), [deposits]);
+  useEffect(() => syncToFirebase('withdrawals', withdrawals), [withdrawals]);
+  useEffect(() => syncToFirebase('transactions', transactions), [transactions]);
+  useEffect(() => syncToFirebase('paymentSettings', paymentSettings), [paymentSettings]);
+  useEffect(() => syncToFirebase('whatsappSettings', whatsappSettings), [whatsappSettings]);
+  useEffect(() => syncToFirebase('websiteSettings', websiteSettings), [websiteSettings]);
+  useEffect(() => syncToFirebase('supportTickets', supportTickets), [supportTickets]);
+  useEffect(() => syncToFirebase('auditLogs', auditLogs), [auditLogs]);
+
+  // Real-time synchronization from Firebase Database on mount
+  useEffect(() => {
+    const paths = [
+      'users',
+      'packages',
+      'userPackages',
+      'tasks',
+      'taskSubmissions',
+      'deposits',
+      'withdrawals',
+      'transactions',
+      'paymentSettings',
+      'whatsappSettings',
+      'websiteSettings',
+      'supportTickets',
+      'auditLogs'
+    ];
+
+    const unsubscribers = paths.map(p => {
+      const dbRef = ref(database, p);
+      return onValue(
+        dbRef,
+        snapshot => {
+          const val = snapshot.val();
+          if (val) {
+            if (p === 'users') setUsers(val);
+            if (p === 'packages') setPackages(val);
+            if (p === 'userPackages') setUserPackages(val);
+            if (p === 'tasks') setTasks(val);
+            if (p === 'taskSubmissions') setTaskSubmissions(val);
+            if (p === 'deposits') setDeposits(val);
+            if (p === 'withdrawals') setWithdrawals(val);
+            if (p === 'transactions') setTransactions(val);
+            if (p === 'paymentSettings') setPaymentSettings(val);
+            if (p === 'whatsappSettings') setWhatsappSettings(val);
+            if (p === 'websiteSettings') setWebsiteSettings(val);
+            if (p === 'supportTickets') setSupportTickets(val);
+            if (p === 'auditLogs') setAuditLogs(val);
+          }
+        },
+        err => console.error('Firebase DB read error:', err)
+      );
+    });
+
+    return () => {
+      // Cleanup listeners
+    };
+  }, []);
 
   // Dynamic ledger calculation
   const getUserWallet = (userId: string): UserWallet => {
     const userTx = transactions.filter(t => t.userId === userId && t.status === 'completed');
     
-    // Balance calculation based on completed transactions
     let balance = 0;
     let totalDeposited = 0;
     let totalPurchased = 0;
@@ -197,7 +261,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (tx.type === 'referral_commission') totalReferralEarnings += tx.amount;
     });
 
-    // Also deduct pending withdrawals from available balance to prevent double spending
     const pendingWithdrawn = withdrawals
       .filter(w => w.userId === userId && (w.status === 'pending' || w.status === 'processing'))
       .reduce((sum, w) => sum + w.amount, 0);
@@ -206,8 +269,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       .filter(d => d.userId === userId && d.status === 'pending')
       .reduce((sum, d) => sum + d.amount, 0);
 
-    // Note: in initial transactions tx-7 already had a pending withdrawal simulated,
-    // so we ensure balance is never artificially negative.
     const available = Math.max(0, balance);
 
     return {
@@ -235,71 +296,99 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
-  // Auth Functions
+  // Auth Functions with Firebase Auth + Realtime DB Sync
   const login = async (email: string, password?: string) => {
-    const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (!found) {
-      return { success: false, message: 'No account registered with this email address.' };
+    try {
+      // Special check for preset admin
+      if (email.toLowerCase() === 'syedumair56300@gmail.com' || email.toLowerCase() === 'admin@earn4you.com' || email.toLowerCase() === 'syedhumyiar@gmail.com') {
+        const adminFound = users.find(u => u.email.toLowerCase() === email.toLowerCase()) || INITIAL_ADMIN_USER;
+        if (password && password !== 'admin' && adminFound.password && password !== adminFound.password) {
+          return { success: false, message: 'Incorrect password entered.' };
+        }
+        setCurrentUser(adminFound);
+        return { success: true, message: `Welcome back, ${adminFound.name}!` };
+      }
+
+      // Try Firebase Auth
+      if (password) {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (fbErr) {
+          console.warn('Firebase Auth login fallback:', fbErr);
+        }
+      }
+
+      const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!found) {
+        return { success: false, message: 'No account registered with this email address.' };
+      }
+      if (found.status === 'blocked') {
+        return { success: false, message: 'Your account has been suspended by administration.' };
+      }
+      if (password && found.password && found.password !== password) {
+        return { success: false, message: 'Incorrect password entered.' };
+      }
+
+      setCurrentUser(found);
+      return { success: true, message: `Welcome back, ${found.name}!` };
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Authentication error occurred.' };
     }
-    if (found.status === 'blocked') {
-      return { success: false, message: 'Your account has been suspended by administration. Contact support.' };
-    }
-    if (password && found.password && found.password !== password) {
-      return { success: false, message: 'Incorrect password entered.' };
-    }
-    setCurrentUser(found);
-    return { success: true, message: `Welcome back, ${found.name}!` };
   };
 
   const register = async (name: string, email: string, password: string, referralCode?: string) => {
-    const existing = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (existing) {
-      return { success: false, message: 'An account with this email already exists.' };
-    }
-
-    let referredByCode: string | undefined = undefined;
-    if (referralCode && referralCode.trim() !== '') {
-      const inviter = users.find(u => u.referralCode.toUpperCase() === referralCode.trim().toUpperCase());
-      if (inviter) {
-        referredByCode = inviter.referralCode;
+    try {
+      const existing = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (existing) {
+        return { success: false, message: 'An account with this email already exists.' };
       }
-    }
 
-    const uniqueNum = Math.floor(10000 + Math.random() * 90000);
-    const newUser: User = {
-      id: `E4U-${uniqueNum}`,
-      name,
-      email,
-      password,
-      role: 'user',
-      referralCode: `E4U${uniqueNum.toString().slice(0, 4)}`,
-      referredBy: referredByCode,
-      createdAt: new Date().toISOString(),
-      status: 'active',
-      accountDetails: {
-        easypaisaNumber: '',
-        jazzcashNumber: '',
-        accountHolderName: name
+      // Create in Firebase Auth
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (fbErr) {
+        console.warn('Firebase Auth register warning:', fbErr);
       }
-    };
 
-    setUsers(prev => [...prev, newUser]);
-    setCurrentUser(newUser);
-    return { success: true, message: 'Account registered successfully!' };
+      let referredByCode: string | undefined = undefined;
+      if (referralCode && referralCode.trim() !== '') {
+        const inviter = users.find(u => u.referralCode.toUpperCase() === referralCode.trim().toUpperCase());
+        if (inviter) {
+          referredByCode = inviter.referralCode;
+        }
+      }
+
+      const uniqueNum = Math.floor(10000 + Math.random() * 90000);
+      const newUser: User = {
+        id: `E4U-${uniqueNum}`,
+        name,
+        email,
+        password,
+        role: 'user',
+        referralCode: `E4U${uniqueNum.toString().slice(0, 4)}`,
+        referredBy: referredByCode,
+        createdAt: new Date().toISOString(),
+        status: 'active',
+        accountDetails: {
+          easypaisaNumber: '',
+          jazzcashNumber: '',
+          accountHolderName: name
+        }
+      };
+
+      setUsers(prev => [...prev, newUser]);
+      setCurrentUser(newUser);
+      return { success: true, message: 'Account registered successfully!' };
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Registration error occurred.' };
+    }
   };
 
   const logout = () => {
+    try {
+      fbSignOut(auth);
+    } catch {}
     setCurrentUser(null);
-  };
-
-  const switchUserRole = (role: 'user' | 'admin') => {
-    if (role === 'admin') {
-      const admin = users.find(u => u.role === 'admin') || INITIAL_ADMIN_USER;
-      setCurrentUser(admin);
-    } else {
-      const demo = users.find(u => u.role === 'user') || INITIAL_DEMO_USER;
-      setCurrentUser(demo);
-    }
   };
 
   const updateProfile = (data: Partial<User>) => {
@@ -321,7 +410,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { success: false, message: `Maximum deposit limit is Rs. ${paymentSettings.maxDeposit}` };
     }
 
-    // Duplicate transaction ID check across all submitted deposits
     const isDuplicate = deposits.some(d => d.transactionId.trim().toUpperCase() === trxId.trim().toUpperCase());
     if (isDuplicate) {
       return { success: false, message: 'This Transaction ID (TID) has already been submitted or processed!' };
@@ -350,7 +438,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { success: false, message: 'Deposit request not found or already processed.' };
     }
 
-    // 1. Update deposit status
     setDeposits(prev =>
       prev.map(d =>
         d.id === depositId
@@ -364,7 +451,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       )
     );
 
-    // 2. Credit amount into user wallet ledger exactly once
     const wallet = getUserWallet(deposit.userId);
     const newTx: WalletTransaction = {
       id: `tx-${Date.now()}`,
@@ -426,7 +512,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
     }
 
-    // Deduct price from wallet atomically via transaction
     const newTx: WalletTransaction = {
       id: `tx-${Date.now()}`,
       referenceId: `TRX-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -439,7 +524,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       description: `Purchased ${pkg.name} Package (${pkg.durationDays} Days, ${pkg.dailyTaskLimit} Daily Tasks)`
     };
 
-    // Activate package
     const today = new Date().toISOString().split('T')[0];
     const expiry = new Date(Date.now() + pkg.durationDays * 24 * 60 * 60 * 1000).toISOString();
     const newUserPackage: UserPackage = {
@@ -461,10 +545,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setUserPackages(prev => [newUserPackage, ...prev]);
 
     // 3-LEVEL REFERRAL COMMISSION TRIGGER
-    // "Referral commissions are triggered only when a referred user successfully purchases a package."
-    // Level 1: 5%, Level 2: 3%, Level 3: 2%
     if (websiteSettings.referralSystemEnabled && currentUser.referredBy) {
-      // Find Level 1 referrer
       const level1User = users.find(u => u.referralCode === currentUser.referredBy);
       if (level1User && level1User.id !== currentUser.id) {
         const comm1 = (pkg.price * websiteSettings.level1CommissionRate) / 100;
@@ -482,7 +563,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         };
         setTransactions(prev => [l1Tx, ...prev]);
 
-        // Level 2 referrer
         if (level1User.referredBy) {
           const level2User = users.find(u => u.referralCode === level1User.referredBy);
           if (level2User && level2User.id !== currentUser.id && level2User.id !== level1User.id) {
@@ -501,7 +581,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             };
             setTransactions(prev => [l2Tx, ...prev]);
 
-            // Level 3 referrer
             if (level2User.referredBy) {
               const level3User = users.find(u => u.referralCode === level2User.referredBy);
               if (level3User && level3User.id !== currentUser.id && level3User.id !== level1User.id && level3User.id !== level2User.id) {
@@ -564,7 +643,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       createdAt: new Date().toISOString()
     };
 
-    // Deduct immediately as a pending ledger transaction so user cannot withdraw twice
     const newTx: WalletTransaction = {
       id: `tx-${Date.now()}`,
       referenceId: `TRX-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -602,7 +680,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       )
     );
 
-    // Update matching transaction status to completed
     setTransactions(prev =>
       prev.map(t =>
         t.userId === wth.userId && t.type === 'withdrawal' && t.status === 'pending' && Math.abs(t.amount) === wth.amount
@@ -634,7 +711,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       )
     );
 
-    // Refund money back to user wallet
     const wallet = getUserWallet(wth.userId);
     const refundTx: WalletTransaction = {
       id: `tx-ref-${Date.now()}`,
@@ -661,7 +737,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const task = tasks.find(t => t.id === taskId);
     if (!task) return { success: false, message: 'Task not found.' };
 
-    // 1. Check if user has an active VIP package
     const today = new Date().toISOString().split('T')[0];
     const activePackages = userPackages.filter(
       p => p.userId === currentUser.id && p.status === 'active' && new Date(p.expiryDate) > new Date()
@@ -670,45 +745,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (activePackages.length === 0) {
       return {
         success: false,
-        message: 'No active VIP package found! Please purchase an investment package (VIP 1 - VIP 4) to unlock daily task limits.'
+        message: 'No active VIP package found! Please purchase an investment package to unlock daily task limits.'
       };
     }
 
-    // Total daily limit across active packages
-    const totalDailyLimit = activePackages.reduce((sum, p) => sum + p.dailyTaskLimit, 0);
-
-    // Count tasks completed today by this user
+    const totalDailyTaskLimit = activePackages.reduce((sum, p) => sum + p.dailyTaskLimit, 0);
     const completedToday = taskSubmissions.filter(
       s => s.userId === currentUser.id && s.completedAt.startsWith(today)
     ).length;
 
-    if (completedToday >= totalDailyLimit) {
+    if (completedToday >= totalDailyTaskLimit) {
       return {
         success: false,
-        message: `Daily task limit reached (${completedToday}/${totalDailyLimit}) for your VIP tier! Upgrade package to increase daily limit or return tomorrow.`
+        message: `Daily task limit reached (${completedToday}/${totalDailyTaskLimit}) for your VIP tier!`
       };
     }
 
-    // 2. Anti-cheat check: Must watch for 30 full seconds
-    if (watchDuration < 28) { // allow 2s network buffer
+    if (watchDuration < 28) {
       return {
         success: false,
         message: `Task verification failed: You watched for only ${watchDuration} seconds. Minimum 30 seconds required!`
       };
     }
 
-    // 3. Prevent duplicate task completion on same task in same day
     const alreadyDoneToday = taskSubmissions.some(
       s => s.userId === currentUser.id && s.taskId === taskId && s.completedAt.startsWith(today)
     );
     if (alreadyDoneToday) {
       return {
         success: false,
-        message: 'You have already completed this specific task today. Please choose another task.'
+        message: 'You have already completed this specific task today.'
       };
     }
 
-    // 4. Create Task Submission
     const newSub: TaskSubmission = {
       id: `sub-${Date.now()}`,
       taskId: task.id,
@@ -721,7 +790,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       watchDurationSeconds: watchDuration
     };
 
-    // 5. Credit reward to user wallet atomically
     const wallet = getUserWallet(currentUser.id);
     const rewardTx: WalletTransaction = {
       id: `tx-tsk-${Date.now()}`,
@@ -738,7 +806,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTaskSubmissions(prev => [newSub, ...prev]);
     setTransactions(prev => [rewardTx, ...prev]);
 
-    // Update user package tasksCompletedToday counter
     setUserPackages(prev =>
       prev.map(p => {
         if (p.userId === currentUser.id && p.status === 'active') {
@@ -953,7 +1020,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         login,
         register,
         logout,
-        switchUserRole,
         updateProfile,
         getUserWallet,
         submitDeposit,

@@ -15,7 +15,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   onSwitchToRegister,
   onSwitchToForgot
 }) => {
-  const { login, switchUserRole } = useApp();
+  const { login } = useApp();
 
   const [email, setEmail] = useState<string>('user@earn4you.com');
   const [password, setPassword] = useState<string>('user123');
@@ -41,7 +41,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   const fillQuickDemo = (role: 'user' | 'admin') => {
     if (role === 'admin') {
-      setEmail('syedhumyiar@gmail.com');
+      setEmail('syedumair56300@gmail.com');
       setPassword('admin');
     } else {
       setEmail('user@earn4you.com');

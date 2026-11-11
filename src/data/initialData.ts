@@ -203,9 +203,9 @@ export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
 };
 
 export const INITIAL_ADMIN_USER: User = {
-  id: 'i9ajhjk1xFYNGOL6mFsEyZOL5GY2',
+  id: 'khqFmOg0rlc4TeCbEyaGG1E3sOn2',
   name: 'Super Admin',
-  email: 'syedhumyiar@gmail.com',
+  email: 'syedumair56300@gmail.com',
   password: 'admin',
   role: 'admin',
   referralCode: 'E4UADMIN',
