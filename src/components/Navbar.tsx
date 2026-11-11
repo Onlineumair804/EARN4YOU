@@ -13,8 +13,7 @@ import {
   MessageCircle,
   TrendingUp,
   Layers,
-  CheckSquare,
-  RefreshCw
+  CheckSquare
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -26,7 +25,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenLogin, onOpenRegister }) =
   const {
     currentUser,
     logout,
-    switchUserRole,
     getUserWallet,
     activeTab,
     setActiveTab,
@@ -152,39 +150,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenLogin, onOpenRegister }) =
 
           {/* Right Action Area */}
           <div className="hidden sm:flex items-center space-x-3">
-            {/* Quick Role Switcher Pill for reviewer testing */}
-            <div className="flex items-center bg-slate-900 border border-slate-700/80 rounded-xl p-1 text-xs">
-              <button
-                onClick={() => {
-                  switchUserRole('user');
-                  setActiveTab('dashboard');
-                }}
-                className={`px-2.5 py-1 rounded-lg font-medium transition ${
-                  !isAdmin
-                    ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Switch to User mode (Syed Umair)"
-              >
-                User View
-              </button>
-              <button
-                onClick={() => {
-                  switchUserRole('admin');
-                  setActiveTab('admin-overview');
-                }}
-                className={`px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 ${
-                  isAdmin
-                    ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Switch to Admin mode"
-              >
-                <Shield className="w-3 h-3" />
-                <span>Admin Mode</span>
-              </button>
-            </div>
-
             {/* Wallet Balance Badge */}
             {currentUser && wallet && !isAdmin && (
               <div
@@ -272,37 +237,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenLogin, onOpenRegister }) =
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-800 bg-[#070c1d] px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-4 duration-200">
-          {/* Quick Role switcher on mobile */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-xs text-slate-400 font-medium">Testing Role:</span>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => {
-                  switchUserRole('user');
-                  setActiveTab('dashboard');
-                  setMobileMenuOpen(false);
-                }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold ${
-                  !isAdmin ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-slate-400'
-                }`}
-              >
-                User
-              </button>
-              <button
-                onClick={() => {
-                  switchUserRole('admin');
-                  setActiveTab('admin-overview');
-                  setMobileMenuOpen(false);
-                }}
-                className={`px-3 py-1 rounded-lg text-xs font-bold ${
-                  isAdmin ? 'bg-amber-500 text-slate-900' : 'text-slate-400'
-                }`}
-              >
-                Admin Panel
-              </button>
-            </div>
-          </div>
-
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => {

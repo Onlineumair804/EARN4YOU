@@ -75,6 +75,7 @@ export const INITIAL_PACKAGES: Package[] = [
 export const INITIAL_TASKS: Task[] = [
   {
     id: 'task-1',
+    packageId: 'pkg-vip-1',
     title: 'Watch & Subscribe: EARN4YOU Official Welcome & Strategy',
     description: 'Watch this 30-second introductory guide and subscribe to the official channel to unlock task rewards.',
     instructions: '1. Click Start Task. 2. Watch the video for full 30 seconds. 3. Click Subscribe button. 4. Wait for timer completion to claim Rs. 15 reward.',
@@ -90,6 +91,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 'task-2',
+    packageId: 'pkg-vip-1',
     title: 'Financial Wisdom: How Compounding Multiplies Wealth',
     description: 'Learn modern digital income management and watch the featured clip for at least 30 seconds.',
     instructions: 'Keep the video active inside the platform for 30 seconds. Do not switch tabs. Reward will be deposited automatically.',
@@ -105,6 +107,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 'task-3',
+    packageId: 'pkg-vip-2',
     title: 'Digital Marketing Mastery: Channel Growth 2026',
     description: 'Boost engagement by viewing this trending video presentation for 30 seconds.',
     instructions: 'Watch minimum 30 seconds. Anti-cheat timer monitors progress.',
@@ -120,6 +123,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 'task-4',
+    packageId: 'pkg-vip-2',
     title: 'Mobile Banking & Fast Transfers in Pakistan (Tutorial)',
     description: 'Essential tutorial on fast Easypaisa & JazzCash transfer security.',
     instructions: 'Watch the full 30-second instructional clip and hit Subscribe to claim.',
@@ -135,6 +139,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 'task-5',
+    packageId: 'pkg-vip-3',
     title: 'Crypto & Stable Asset Analysis Clip',
     description: 'Daily global economic overview. Watch 30 seconds to support sponsored creators.',
     instructions: 'Play video inside viewer for 30 seconds and receive instant verified credit.',
@@ -198,7 +203,7 @@ export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
 };
 
 export const INITIAL_ADMIN_USER: User = {
-  id: 'E4U-ADMIN-01',
+  id: 'i9ajhjk1xFYNGOL6mFsEyZOL5GY2',
   name: 'Super Admin',
   email: 'admin@earn4you.com',
   password: 'admin',

@@ -53,6 +53,7 @@ export interface UserPackage {
 
 export interface Task {
   id: string;
+  packageId: string; // e.g. 'pkg-vip-1', 'pkg-vip-2', etc.
   title: string;
   description: string;
   instructions: string;

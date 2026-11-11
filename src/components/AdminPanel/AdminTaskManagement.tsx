@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export const AdminTaskManagement: React.FC = () => {
-  const { tasks, addTask, updateTask, deleteTask, toggleTaskStatus, taskSubmissions } = useApp();
+  const { tasks, addTask, updateTask, deleteTask, toggleTaskStatus, taskSubmissions, packages } = useApp();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -25,6 +25,7 @@ export const AdminTaskManagement: React.FC = () => {
   const [description, setDescription] = useState<string>('');
   const [instructions, setInstructions] = useState<string>('');
   const [reward, setReward] = useState<string>('15');
+  const [packageId, setPackageId] = useState<string>('pkg-vip-1');
   const [youtubeVideoUrl, setYoutubeVideoUrl] = useState<string>('');
   const [channelSubscribeUrl, setChannelSubscribeUrl] = useState<string>('');
   const [channelName, setChannelName] = useState<string>('');
@@ -36,6 +37,7 @@ export const AdminTaskManagement: React.FC = () => {
     setDescription('');
     setInstructions('Watch for 30 seconds inside website player. Subscribe to channel to complete.');
     setReward('15');
+    setPackageId('pkg-vip-1');
     setYoutubeVideoUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     setChannelSubscribeUrl('https://youtube.com/@earn4you_official?sub_confirmation=1');
     setChannelName('EARN4YOU Network');
@@ -49,6 +51,7 @@ export const AdminTaskManagement: React.FC = () => {
     setDescription(task.description);
     setInstructions(task.instructions);
     setReward(task.reward.toString());
+    setPackageId(task.packageId || 'pkg-vip-1');
     setYoutubeVideoUrl(task.youtubeVideoUrl);
     setChannelSubscribeUrl(task.channelSubscribeUrl || '');
     setChannelName(task.channelName || '');
@@ -70,6 +73,7 @@ export const AdminTaskManagement: React.FC = () => {
 
     if (editingTask) {
       updateTask(editingTask.id, {
+        packageId,
         title,
         description,
         instructions,
@@ -83,6 +87,7 @@ export const AdminTaskManagement: React.FC = () => {
       });
     } else {
       addTask({
+        packageId,
         title,
         description,
         instructions,
@@ -115,7 +120,7 @@ export const AdminTaskManagement: React.FC = () => {
             YouTube Task <span className="gold-gradient-text">Management</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Create sponsored YouTube video watch tasks, configure channel subscribe URLs, and reward rates.
+            Create sponsored tasks linked to specific VIP Packages. Users only see tasks for their purchased packages.
           </p>
         </div>
 
@@ -133,75 +138,78 @@ export const AdminTaskManagement: React.FC = () => {
         <h3 className="text-base font-bold text-white">Active Task Inventory ({tasks.length})</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {tasks.map(task => (
-            <div
-              key={task.id}
-              className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-4 shadow-lg hover:border-amber-500/30 transition"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/20">
-                    {task.category}
-                  </span>
-                  <span className="text-xs font-black text-amber-400">
-                    +Rs. {task.reward}
-                  </span>
+          {tasks.map(task => {
+            const pkg = packages.find(p => p.id === task.packageId);
+            return (
+              <div
+                key={task.id}
+                className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-4 shadow-lg hover:border-amber-500/30 transition"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      {pkg ? pkg.name : 'VIP Package'}
+                    </span>
+                    <span className="text-xs font-black text-amber-400">
+                      +Rs. {task.reward}
+                    </span>
+                  </div>
+
+                  {/* Video thumbnail */}
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 mb-2">
+                    <img
+                      src={`https://img.youtube.com/vi/${task.youtubeVideoId}/hqdefault.jpg`}
+                      alt={task.title}
+                      className="w-full h-full object-cover"
+                      onError={e => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-bold text-amber-400">
+                      30s Required
+                    </div>
+                  </div>
+
+                  <h4 className="text-sm font-bold text-white line-clamp-1">{task.title}</h4>
+                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{task.description}</p>
+                  {task.channelName && (
+                    <p className="text-[11px] text-slate-500 mt-1">Channel: {task.channelName}</p>
+                  )}
                 </div>
 
-                {/* Video thumbnail */}
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 mb-2">
-                  <img
-                    src={`https://img.youtube.com/vi/${task.youtubeVideoId}/hqdefault.jpg`}
-                    alt={task.title}
-                    className="w-full h-full object-cover"
-                    onError={e => {
-                      (e.target as HTMLElement).style.display = 'none';
-                    }}
-                  />
-                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-bold text-amber-400">
-                    30s Required
+                {/* Action Controls */}
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                  <button
+                    onClick={() => toggleTaskStatus(task.id)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                      task.status === 'active'
+                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    {task.status === 'active' ? 'Active' : 'Inactive'}
+                  </button>
+
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => openEditModal(task)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                      title="Edit Task"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => deleteTask(task.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800"
+                      title="Delete Task"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-
-                <h4 className="text-sm font-bold text-white line-clamp-1">{task.title}</h4>
-                <p className="text-xs text-slate-400 mt-1 line-clamp-2">{task.description}</p>
-                {task.channelName && (
-                  <p className="text-[11px] text-slate-500 mt-1">Channel: {task.channelName}</p>
-                )}
               </div>
-
-              {/* Action Controls */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                <button
-                  onClick={() => toggleTaskStatus(task.id)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    task.status === 'active'
-                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-slate-800 text-slate-400'
-                  }`}
-                >
-                  {task.status === 'active' ? 'Active' : 'Inactive'}
-                </button>
-
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => openEditModal(task)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
-                    title="Edit Task"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => deleteTask(task.id)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800"
-                    title="Delete Task"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -277,7 +285,24 @@ export const AdminTaskManagement: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
+                    Assign VIP Package
+                  </label>
+                  <select
+                    value={packageId}
+                    onChange={e => setPackageId(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-amber-400 font-bold"
+                  >
+                    {packages.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} (Rs. {p.price})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
                     Reward Amount (PKR)

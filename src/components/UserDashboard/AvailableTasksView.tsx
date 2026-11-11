@@ -34,8 +34,11 @@ export const AvailableTasksView: React.FC = () => {
 
   const tasksRemainingToday = Math.max(0, totalDailyTaskLimit - tasksDoneToday);
 
-  // Active tasks configured by admin
-  const activeTasks = tasks.filter(t => t.status === 'active');
+  // Filter tasks strictly associated with user's active purchased packages
+  const activePackageIds = activeUserPackages.map(p => p.packageId);
+  const activeTasks = tasks.filter(
+    t => t.status === 'active' && activePackageIds.includes(t.packageId)
+  );
 
   return (
     <div className="space-y-6">
@@ -45,14 +48,14 @@ export const AvailableTasksView: React.FC = () => {
           <div className="flex items-center space-x-2">
             <span className="px-2.5 py-0.5 rounded-full bg-red-600/30 border border-red-500/40 text-red-400 font-extrabold text-[10px] tracking-wide uppercase flex items-center space-x-1">
               <Youtube className="w-3 h-3 text-red-500" />
-              <span>Sponsored 30-Second Video Tasks</span>
+              <span>Package-Associated 30-Second Video Tasks</span>
             </span>
           </div>
           <h2 className="text-2xl font-black text-white mt-1">
-            Available <span className="gold-gradient-text">YouTube Tasks</span>
+            Available <span className="gold-gradient-text">VIP Package Tasks</span>
           </h2>
           <p className="text-xs text-slate-300 mt-1 max-w-xl">
-            Watch any video for a strict 30-second duration inside the platform viewer. The anti-cheat timer will automatically complete the task and deposit your earnings.
+            Tasks are dynamically linked to your active VIP packages. Watch for 30 seconds to earn the exact package reward amount configured by administration.
           </p>
         </div>
 
@@ -80,9 +83,9 @@ export const AvailableTasksView: React.FC = () => {
               <Package className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white">VIP Package Required to Earn Task Rewards</h4>
+              <h4 className="text-sm font-bold text-white">VIP Package Required to Unlock Tasks</h4>
               <p className="text-xs text-slate-300 mt-0.5">
-                You do not have an active investment package. Purchase VIP 1 (Rs. 500) or higher to unlock daily task quotas and earn instant PKR.
+                You do not have an active investment package. Purchase a VIP package (e.g. VIP 1) to unlock tasks specifically assigned to that package.
               </p>
             </div>
           </div>
@@ -96,6 +99,16 @@ export const AvailableTasksView: React.FC = () => {
       )}
 
       {/* Tasks Grid */}
+      {activeUserPackages.length > 0 && activeTasks.length === 0 && (
+        <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
+          <AlertCircle className="w-10 h-10 text-amber-400 mx-auto" />
+          <h4 className="text-base font-bold text-white">No tasks currently assigned to your active package(s)</h4>
+          <p className="text-xs text-slate-400 max-w-md mx-auto">
+            Administration is currently updating tasks for your VIP tier. Please check back shortly or contact support.
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {activeTasks.map(task => {
           const isDoneToday = taskSubmissions.some(
@@ -127,7 +140,6 @@ export const AvailableTasksView: React.FC = () => {
                     alt={task.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={e => {
-                      // Fallback if video thumbnail fails
                       (e.target as HTMLElement).style.display = 'none';
                     }}
                   />
