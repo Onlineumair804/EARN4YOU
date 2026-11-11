@@ -39,16 +39,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  const fillQuickDemo = (role: 'user' | 'admin') => {
-    if (role === 'admin') {
-      setEmail('syedumair56300@gmail.com');
-      setPassword('admin');
-    } else {
-      setEmail('user@earn4you.com');
-      setPassword('user123');
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-[#0c142b] to-[#070b1a] rounded-3xl border border-amber-500/30 shadow-2xl p-6 sm:p-8 overflow-hidden">
@@ -76,19 +66,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </p>
         </div>
 
-        {/* Quick Demo Credentials Buttons */}
-        <div className="mb-5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-xs">
-          <span className="text-[11px] text-slate-400 font-semibold">Test Sign In:</span>
-          <div className="flex space-x-2">
-            <button
-              type="button"
-              onClick={() => fillQuickDemo('user')}
-              className="px-3 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-bold text-[11px] border border-amber-500/30 cursor-pointer"
-            >
-              Demo User Test
-            </button>
-          </div>
-        </div>
+
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
