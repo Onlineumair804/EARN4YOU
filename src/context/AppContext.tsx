@@ -149,8 +149,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [transactions, setTransactions] = useState<WalletTransaction[]>(() =>
     loadLocal<WalletTransaction[]>('transactions', INITIAL_TRANSACTIONS)
   );
+  const sanitizePaymentSettings = (saved: any): PaymentSettings => {
+    return {
+      ...INITIAL_PAYMENT_SETTINGS,
+      ...(saved || {}),
+      easypaisa: { ...INITIAL_PAYMENT_SETTINGS.easypaisa, ...(saved?.easypaisa || {}) },
+      jazzcash: { ...INITIAL_PAYMENT_SETTINGS.jazzcash, ...(saved?.jazzcash || {}) },
+      bankTransfer: { ...INITIAL_PAYMENT_SETTINGS.bankTransfer, ...(saved?.bankTransfer || {}) },
+      customQr: { ...INITIAL_PAYMENT_SETTINGS.customQr, ...(saved?.customQr || {}) }
+    };
+  };
+
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(() =>
-    loadLocal<PaymentSettings>('paymentSettings', INITIAL_PAYMENT_SETTINGS)
+    sanitizePaymentSettings(loadLocal<PaymentSettings>('paymentSettings', INITIAL_PAYMENT_SETTINGS))
   );
   const [whatsappSettings, setWhatsappSettings] = useState<WhatsAppSettings>(() =>
     loadLocal<WhatsAppSettings>('whatsappSettings', INITIAL_WHATSAPP_SETTINGS)
@@ -225,7 +236,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             if (p === 'deposits') setDeposits(val);
             if (p === 'withdrawals') setWithdrawals(val);
             if (p === 'transactions') setTransactions(val);
-            if (p === 'paymentSettings') setPaymentSettings(val);
+            if (p === 'paymentSettings') setPaymentSettings(sanitizePaymentSettings(val));
             if (p === 'whatsappSettings') setWhatsappSettings(val);
             if (p === 'websiteSettings') setWebsiteSettings(val);
             if (p === 'supportTickets') setSupportTickets(val);
