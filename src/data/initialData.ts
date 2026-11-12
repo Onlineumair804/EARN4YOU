@@ -160,25 +160,35 @@ export const INITIAL_PAYMENT_SETTINGS: PaymentSettings = {
     accountTitle: 'EARN4YOU OFFICIAL PVT',
     accountNumber: '0304-9871234',
     instructions: 'Transfer required amount via Easypaisa App or *786#. Copy 11-digit TID (Transaction ID) and upload receipt screenshot.',
-    enabled: true
+    enabled: true,
+    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Easypaisa-03049871234'
   },
   jazzcash: {
     accountTitle: 'EARN4YOU TREASURY',
     accountNumber: '0321-4567890',
     instructions: 'Send money to JazzCash account. Enter TID from SMS/App confirmation for instant approval.',
-    enabled: true
+    enabled: true,
+    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=JazzCash-03214567890'
   },
-  nayapay: {
-    accountTitle: 'EARN4YOU DIGITAL',
-    accountNumber: '0315-7788990',
-    instructions: 'Direct transfer to NayaPay wallet ID. Fast zero-fee processing.',
-    enabled: true
+  bankTransfer: {
+    accountTitle: 'EARN4YOU ENTERPRISES (Meezan Bank)',
+    accountNumber: 'PK36MEZN0001234567890123',
+    instructions: 'Direct Bank Transfer / IBAN deposit. Upload bank receipt with transaction reference number.',
+    enabled: true,
+    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MeezanBank-PK36MEZN0001234567890123'
+  },
+  customQr: {
+    accountTitle: 'EARN4YOU UNIVERSAL QR',
+    accountNumber: 'E4U-GLOBAL-QR-PAY',
+    instructions: 'Scan QR code using any supported mobile banking app or wallet. Enter transaction reference ID.',
+    enabled: true,
+    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=EARN4YOU-CUSTOM-QR-PAYMENT'
   },
   minDeposit: 500,
   maxDeposit: 100000,
   minWithdrawal: 300,
   maxWithdrawal: 50000,
-  withdrawalFeePercentage: 5, // 5% processing fee
+  withdrawalFeePercentage: 5,
   withdrawalProcessingTime: '30 Minutes - 4 Hours'
 };
 

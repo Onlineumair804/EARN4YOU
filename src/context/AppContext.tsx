@@ -63,7 +63,7 @@ interface AppContextType {
   updateProfile: (data: Partial<User>) => void;
   // Financial & Ledger
   getUserWallet: (userId: string) => UserWallet;
-  submitDeposit: (method: 'Easypaisa' | 'JazzCash' | 'NayaPay', amount: number, trxId: string, screenshotUrl?: string) => { success: boolean; message: string };
+  submitDeposit: (method: string, amount: number, trxId: string, screenshotUrl?: string) => { success: boolean; message: string };
   approveDeposit: (depositId: string) => { success: boolean; message: string };
   rejectDeposit: (depositId: string, reason: string) => { success: boolean; message: string };
   purchasePackage: (packageId: string) => { success: boolean; message: string };
@@ -423,7 +423,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Financial Deposit Flow
-  const submitDeposit = (method: 'Easypaisa' | 'JazzCash' | 'NayaPay', amount: number, trxId: string, screenshotUrl?: string) => {
+  const submitDeposit = (method: string, amount: number, trxId: string, screenshotUrl?: string) => {
     if (!currentUser) return { success: false, message: 'Please log in to submit a deposit.' };
     if (currentUser.status === 'blocked') return { success: false, message: 'Account is blocked.' };
 

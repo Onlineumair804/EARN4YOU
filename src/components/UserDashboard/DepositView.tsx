@@ -1,22 +1,35 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { INITIAL_PAYMENT_SETTINGS } from '../../data/initialData';
 import {
-  ArrowDownLeft,
   Copy,
   Check,
   Upload,
   AlertCircle,
   CheckCircle2,
-  Clock,
-  ShieldCheck,
-  Info,
-  Wallet
+  QrCode
 } from 'lucide-react';
 
 export const DepositView: React.FC = () => {
-  const { paymentSettings, submitDeposit, currentUser, deposits, setActiveTab } = useApp();
+  const { paymentSettings, submitDeposit, currentUser, deposits } = useApp();
 
-  const [selectedMethod, setSelectedMethod] = useState<'Easypaisa' | 'JazzCash' | 'NayaPay'>('Easypaisa');
+  const currentPaymentSettings = paymentSettings || INITIAL_PAYMENT_SETTINGS;
+
+  const availableMethods = [
+    { key: 'Easypaisa', label: 'Easypaisa', config: currentPaymentSettings.easypaisa || INITIAL_PAYMENT_SETTINGS.easypaisa },
+    { key: 'JazzCash', label: 'JazzCash', config: currentPaymentSettings.jazzcash || INITIAL_PAYMENT_SETTINGS.jazzcash },
+    { key: 'Bank Transfer', label: 'Bank Transfer', config: currentPaymentSettings.bankTransfer || INITIAL_PAYMENT_SETTINGS.bankTransfer },
+    { key: 'Custom QR Payment', label: 'Custom QR', config: currentPaymentSettings.customQr || INITIAL_PAYMENT_SETTINGS.customQr }
+  ].filter(m => m.config?.enabled);
+
+  const [selectedMethod, setSelectedMethod] = useState<string>(
+    availableMethods[0]?.key || 'Easypaisa'
+  );
   const [amount, setAmount] = useState<string>('1000');
   const [transactionId, setTransactionId] = useState<string>('');
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
@@ -27,11 +40,13 @@ export const DepositView: React.FC = () => {
   if (!currentUser) return null;
 
   const currentAccount =
-    selectedMethod === 'Easypaisa'
-      ? paymentSettings.easypaisa
-      : selectedMethod === 'JazzCash'
-      ? paymentSettings.jazzcash
-      : paymentSettings.nayapay;
+    selectedMethod === 'JazzCash'
+      ? currentPaymentSettings.jazzcash || INITIAL_PAYMENT_SETTINGS.jazzcash
+      : selectedMethod === 'Bank Transfer'
+      ? currentPaymentSettings.bankTransfer || INITIAL_PAYMENT_SETTINGS.bankTransfer
+      : selectedMethod === 'Custom QR Payment'
+      ? currentPaymentSettings.customQr || INITIAL_PAYMENT_SETTINGS.customQr
+      : currentPaymentSettings.easypaisa || INITIAL_PAYMENT_SETTINGS.easypaisa;
 
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -60,8 +75,8 @@ export const DepositView: React.FC = () => {
       return;
     }
 
-    if (!transactionId || transactionId.trim().length < 5) {
-      setResult({ success: false, message: 'Please enter the complete 11-digit Transaction ID (TID) received in confirmation SMS.' });
+    if (!transactionId || transactionId.trim().length < 4) {
+      setResult({ success: false, message: 'Please enter the valid Transaction ID (TID) or Reference number.' });
       return;
     }
 
@@ -89,7 +104,7 @@ export const DepositView: React.FC = () => {
           Deposit Funds Into <span className="gold-gradient-text">EARN4YOU Wallet</span>
         </h2>
         <p className="text-xs text-slate-400 mt-1 max-w-xl">
-          Transfer via Easypaisa, JazzCash, or NayaPay. Enter the Transaction ID (TID) for rapid admin review. Deposits fund your wallet; package purchase is separate.
+          Transfer via active payment methods. Scan QR code or copy account details. Enter the Transaction ID (TID) for instant verification.
         </p>
       </div>
 
@@ -102,64 +117,61 @@ export const DepositView: React.FC = () => {
               <span>Select Payment Method</span>
             </h3>
 
-            {/* Methods Tabs */}
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedMethod('Easypaisa')}
-                className={`p-3 rounded-xl border text-center transition flex flex-col items-center justify-center space-y-1.5 cursor-pointer ${
-                  selectedMethod === 'Easypaisa'
-                    ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-md shadow-emerald-500/10'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <span className="text-xs font-bold">Easypaisa</span>
-                <span className="text-[10px] text-emerald-400/80">Instant</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedMethod('JazzCash')}
-                className={`p-3 rounded-xl border text-center transition flex flex-col items-center justify-center space-y-1.5 cursor-pointer ${
-                  selectedMethod === 'JazzCash'
-                    ? 'bg-red-500/10 border-red-500 text-red-400 shadow-md shadow-red-500/10'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <span className="text-xs font-bold">JazzCash</span>
-                <span className="text-[10px] text-red-400/80">Fast</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedMethod('NayaPay')}
-                className={`p-3 rounded-xl border text-center transition flex flex-col items-center justify-center space-y-1.5 cursor-pointer ${
-                  selectedMethod === 'NayaPay'
-                    ? 'bg-orange-500/10 border-orange-500 text-orange-400 shadow-md shadow-orange-500/10'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <span className="text-xs font-bold">NayaPay</span>
-                <span className="text-[10px] text-orange-400/80">Zero Fee</span>
-              </button>
+            {/* Methods Grid */}
+            <div className="grid grid-cols-2 gap-2">
+              {availableMethods.map(m => {
+                const isActive = selectedMethod === m.key;
+                return (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => setSelectedMethod(m.key)}
+                    className={`p-3 rounded-xl border text-center transition flex flex-col items-center justify-center space-y-1 cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-500/15 border-amber-500 text-amber-300 shadow-md shadow-amber-500/10'
+                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <span className="text-xs font-bold">{m.label}</span>
+                    <span className="text-[10px] text-emerald-400">Available</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Admin-Configured Receiving Account Box */}
             <div className="p-4 rounded-xl bg-slate-950 border border-amber-500/20 space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <span className="text-xs text-slate-400 font-semibold">Payment Receiver</span>
-                <span className="text-xs font-bold text-amber-400">{selectedMethod} Official</span>
+                <span className="text-xs font-bold text-amber-400">{selectedMethod}</span>
               </div>
+
+              {/* QR Code if available */}
+              {currentAccount?.qrCodeUrl && (
+                <div className="flex flex-col items-center py-2 bg-slate-900/60 rounded-xl border border-slate-800">
+                  <div className="w-32 h-32 bg-white p-2 rounded-xl border border-amber-500/30 flex items-center justify-center">
+                    <img
+                      src={currentAccount.qrCodeUrl}
+                      alt="Payment QR Code"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <span className="text-[10px] text-amber-400 mt-1 flex items-center space-x-1">
+                    <QrCode className="w-3 h-3" />
+                    <span>Scan QR code to pay instantly</span>
+                  </span>
+                </div>
+              )}
 
               {/* Account Number */}
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-500">Account Number</span>
+                <span className="text-[10px] uppercase font-bold text-slate-500">Account / IBAN Number</span>
                 <div className="flex items-center justify-between mt-0.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="font-mono text-base font-bold text-white tracking-wider">
-                    {currentAccount.accountNumber}
+                  <span className="font-mono text-sm font-bold text-white tracking-wider">
+                    {currentAccount?.accountNumber}
                   </span>
                   <button
-                    onClick={() => handleCopy(currentAccount.accountNumber, 'accNum')}
+                    onClick={() => handleCopy(currentAccount?.accountNumber || '', 'accNum')}
                     className="p-1.5 rounded text-amber-400 hover:bg-slate-800 transition cursor-pointer"
                     title="Copy Account Number"
                   >
@@ -174,13 +186,13 @@ export const DepositView: React.FC = () => {
 
               {/* Account Title */}
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-500">Account Title</span>
+                <span className="text-[10px] uppercase font-bold text-slate-500">Account Holder Title</span>
                 <div className="flex items-center justify-between mt-0.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
                   <span className="text-xs font-bold text-slate-200">
-                    {currentAccount.accountTitle}
+                    {currentAccount?.accountTitle}
                   </span>
                   <button
-                    onClick={() => handleCopy(currentAccount.accountTitle, 'accTitle')}
+                    onClick={() => handleCopy(currentAccount?.accountTitle || '', 'accTitle')}
                     className="p-1.5 rounded text-amber-400 hover:bg-slate-800 transition cursor-pointer"
                     title="Copy Title"
                   >
@@ -195,14 +207,14 @@ export const DepositView: React.FC = () => {
 
               {/* Instructions */}
               <p className="text-[11px] text-slate-400 pt-1 leading-relaxed">
-                {currentAccount.instructions}
+                {currentAccount?.instructions}
               </p>
             </div>
 
             {/* Limits info */}
             <div className="text-[11px] text-slate-400 flex items-center justify-between px-1">
-              <span>Min Deposit: Rs. {paymentSettings.minDeposit.toLocaleString()}</span>
-              <span>Max Deposit: Rs. {paymentSettings.maxDeposit.toLocaleString()}</span>
+              <span>Min: Rs. {(currentPaymentSettings.minDeposit || 500).toLocaleString()}</span>
+              <span>Max: Rs. {(currentPaymentSettings.maxDeposit || 100000).toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -226,8 +238,8 @@ export const DepositView: React.FC = () => {
                 </span>
                 <input
                   type="number"
-                  min={paymentSettings.minDeposit}
-                  max={paymentSettings.maxDeposit}
+                  min={currentPaymentSettings.minDeposit || 500}
+                  max={currentPaymentSettings.maxDeposit || 100000}
                   value={amount}
                   onChange={e => setAmount(e.target.value)}
                   required
@@ -254,14 +266,14 @@ export const DepositView: React.FC = () => {
             {/* Transaction ID */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Transaction ID (TID / TRX ID) <span className="text-amber-400">*</span>
+                Transaction Reference ID (TID / TRX ID) <span className="text-amber-400">*</span>
               </label>
               <input
                 type="text"
                 value={transactionId}
                 onChange={e => setTransactionId(e.target.value)}
                 required
-                placeholder="e.g. EP9081237461 or JC482910"
+                placeholder="e.g. EP9081237461 or TR-1092834"
                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-white font-mono font-bold text-sm uppercase tracking-wider outline-none transition"
               />
               <p className="text-[11px] text-slate-400 mt-1">

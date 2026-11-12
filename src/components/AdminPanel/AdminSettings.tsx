@@ -210,18 +210,18 @@ export const AdminSettings: React.FC = () => {
               </div>
             </div>
 
-            {/* NayaPay */}
+            {/* Bank Transfer */}
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-              <span className="text-xs font-bold text-orange-400 uppercase">NayaPay Account</span>
+              <span className="text-xs font-bold text-blue-400 uppercase">Bank Transfer / IBAN</span>
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase">Number</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase">Account / IBAN</label>
                 <input
                   type="text"
-                  value={payState.nayapay.accountNumber}
+                  value={payState.bankTransfer.accountNumber}
                   onChange={e =>
                     setPayState({
                       ...payState,
-                      nayapay: { ...payState.nayapay, accountNumber: e.target.value }
+                      bankTransfer: { ...payState.bankTransfer, accountNumber: e.target.value }
                     })
                   }
                   className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 font-mono text-xs text-white"
@@ -231,11 +231,11 @@ export const AdminSettings: React.FC = () => {
                 <label className="block text-[10px] font-bold text-slate-400 uppercase">Title</label>
                 <input
                   type="text"
-                  value={payState.nayapay.accountTitle}
+                  value={payState.bankTransfer.accountTitle}
                   onChange={e =>
                     setPayState({
                       ...payState,
-                      nayapay: { ...payState.nayapay, accountTitle: e.target.value }
+                      bankTransfer: { ...payState.bankTransfer, accountTitle: e.target.value }
                     })
                   }
                   className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white"

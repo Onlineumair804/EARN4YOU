@@ -37,6 +37,7 @@ import { AdminSettings } from './components/AdminPanel/AdminSettings';
 import { AdminSupportManagement } from './components/AdminPanel/AdminSupportManagement';
 import { AdminAuditLogs } from './components/AdminPanel/AdminAuditLogs';
 import { AdminFirebaseBlueprint } from './components/AdminPanel/AdminFirebaseBlueprint';
+import { AdminPaymentMethodsManager } from './components/AdminPanel/AdminPaymentMethodsManager';
 
 // Auth Modals
 import { LoginModal } from './components/Auth/LoginModal';
@@ -65,7 +66,8 @@ import {
   Lock,
   Mail,
   AlertCircle,
-  Crown
+  Crown,
+  QrCode
 } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
@@ -157,6 +159,7 @@ const MainAppContent: React.FC = () => {
     { id: 'admin-tasks', label: '30s YouTube Tasks', icon: Play },
     { id: 'admin-packages', label: 'Package Management', icon: Package },
     { id: 'admin-users', label: 'All Users & Wallets', icon: Users },
+    { id: 'admin-payment-methods', label: 'Payment Methods & QR', icon: QrCode },
     { id: 'admin-settings', label: 'Payment & WhatsApp Settings', icon: Settings },
     { id: 'admin-support', label: 'Support Tickets', icon: HelpCircle },
     { id: 'admin-audit', label: 'Audit Activity Logs', icon: ListOrdered },
@@ -386,6 +389,7 @@ const MainAppContent: React.FC = () => {
               {activeTab === 'admin-deposits' && <AdminDepositManagement />}
               {activeTab === 'admin-withdrawals' && <AdminWithdrawalManagement />}
               {activeTab === 'admin-tasks' && <AdminTaskManagement />}
+              {activeTab === 'admin-payment-methods' && <AdminPaymentMethodsManager />}
               {activeTab === 'admin-settings' && <AdminSettings />}
               {activeTab === 'admin-support' && <AdminSupportManagement />}
               {activeTab === 'admin-audit' && <AdminAuditLogs />}

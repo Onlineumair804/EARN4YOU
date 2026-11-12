@@ -86,7 +86,7 @@ export interface DepositRequest {
   userId: string;
   userName: string;
   userEmail: string;
-  paymentMethod: 'Easypaisa' | 'JazzCash' | 'NayaPay';
+  paymentMethod: string;
   amount: number;
   transactionId: string; // Unique TID / TRX ID
   screenshotUrl?: string;
@@ -174,7 +174,8 @@ export interface PaymentAccountConfig {
 export interface PaymentSettings {
   easypaisa: PaymentAccountConfig;
   jazzcash: PaymentAccountConfig;
-  nayapay: PaymentAccountConfig;
+  bankTransfer: PaymentAccountConfig;
+  customQr: PaymentAccountConfig;
   minDeposit: number;
   maxDeposit: number;
   minWithdrawal: number;
