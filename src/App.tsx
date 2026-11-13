@@ -8,6 +8,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { Footer } from './components/Footer';
+import { BottomNav } from './components/BottomNav';
 
 // User Views
 import { DashboardOverview } from './components/UserDashboard/DashboardOverview';
@@ -401,6 +402,9 @@ const MainAppContent: React.FC = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* Mobile Floating Bottom Navigation Bar matching AurexGold design */}
+      <BottomNav />
 
       {/* Auth Modals */}
       <LoginModal

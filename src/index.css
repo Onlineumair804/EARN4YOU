@@ -33,6 +33,17 @@
   box-shadow: 0 6px 25px 0 rgba(245, 158, 11, 0.6);
 }
 
+/* Mint-Teal Reference Design Utilities */
+.mint-gradient-btn {
+  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+  box-shadow: 0 4px 20px -2px rgba(13, 148, 136, 0.35);
+  color: #ffffff;
+}
+
+.mint-gradient-btn:hover {
+  background: linear-gradient(135deg, #5eead4 0%, #0f766e 100%);
+}
+
 .vip-card-glass {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 17, 36, 0.9) 100%);
   backdrop-filter: blur(16px);
@@ -62,7 +73,7 @@
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #d97706;
+  background: #0d9488;
 }
 
 @keyframes pulse-gold {
