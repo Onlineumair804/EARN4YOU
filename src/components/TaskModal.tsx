@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Task } from '../types';
 import { useApp } from '../context/AppContext';
 import { X, Play, CheckCircle2, Clock, Youtube, ExternalLink, ShieldCheck, AlertCircle, Sparkles } from 'lucide-react';
+import { AdsterraBannerView } from './AdsterraBannerView';
 import confetti from 'canvas-confetti';
 
 interface TaskModalProps {
@@ -10,7 +11,7 @@ interface TaskModalProps {
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({ task, onClose }) => {
-  const { completeTask } = useApp();
+  const { completeTask, adsterraSettings } = useApp();
   const [secondsRemaining, setSecondsRemaining] = useState<number>(30);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -201,6 +202,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, onClose }) => {
               />
             )}
           </div>
+
+          {/* Global Adsterra Banner (Managed via Admin Panel) */}
+          <AdsterraBannerView bannerCode={adsterraSettings.bannerCode} enabled={adsterraSettings.enabled} />
 
           {/* Channel Subscribe Section (if applicable) */}
           {task.channelSubscribeUrl && (

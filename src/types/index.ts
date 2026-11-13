@@ -234,3 +234,9 @@ export interface AuditLog {
   ipAddress?: string;
   timestamp: string;
 }
+
+export interface AdsterraSettings {
+  bannerCode: string;
+  enabled: boolean;
+}
+

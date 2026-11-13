@@ -13,7 +13,8 @@ import {
   WebsiteSettings,
   UserPackage,
   SupportTicket,
-  AuditLog
+  AuditLog,
+  AdsterraSettings
 } from '../types';
 import {
   INITIAL_PACKAGES,
@@ -21,6 +22,7 @@ import {
   INITIAL_PAYMENT_SETTINGS,
   INITIAL_WHATSAPP_SETTINGS,
   INITIAL_WEBSITE_SETTINGS,
+  INITIAL_ADSTERRA_SETTINGS,
   INITIAL_ADMIN_USER,
   INITIAL_DEMO_USER,
   INITIAL_USER_PACKAGES,
@@ -52,6 +54,7 @@ interface AppContextType {
   paymentSettings: PaymentSettings;
   whatsappSettings: WhatsAppSettings;
   websiteSettings: WebsiteSettings;
+  adsterraSettings: AdsterraSettings;
   supportTickets: SupportTicket[];
   auditLogs: AuditLog[];
   activeTab: string;
@@ -83,6 +86,7 @@ interface AppContextType {
   updatePaymentSettings: (settings: PaymentSettings) => void;
   updateWhatsAppSettings: (settings: WhatsAppSettings) => void;
   updateWebsiteSettings: (settings: WebsiteSettings) => void;
+  updateAdsterraSettings: (settings: AdsterraSettings) => void;
   toggleUserBlock: (userId: string) => void;
   adjustUserBalance: (userId: string, amount: number, reason: string) => void;
   createSupportTicket: (subject: string, category: any, message: string) => void;
@@ -169,6 +173,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [websiteSettings, setWebsiteSettings] = useState<WebsiteSettings>(() =>
     loadLocal<WebsiteSettings>('websiteSettings', INITIAL_WEBSITE_SETTINGS)
   );
+  const [adsterraSettings, setAdsterraSettings] = useState<AdsterraSettings>(() =>
+    loadLocal<AdsterraSettings>('adsterraSettings', INITIAL_ADSTERRA_SETTINGS)
+  );
   const [supportTickets, setSupportTickets] = useState<SupportTicket[]>(() =>
     loadLocal<SupportTicket[]>('supportTickets', INITIAL_SUPPORT_TICKETS)
   );
@@ -200,6 +207,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => syncToFirebase('paymentSettings', paymentSettings), [paymentSettings]);
   useEffect(() => syncToFirebase('whatsappSettings', whatsappSettings), [whatsappSettings]);
   useEffect(() => syncToFirebase('websiteSettings', websiteSettings), [websiteSettings]);
+  useEffect(() => syncToFirebase('adsterraSettings', adsterraSettings), [adsterraSettings]);
   useEffect(() => syncToFirebase('supportTickets', supportTickets), [supportTickets]);
   useEffect(() => syncToFirebase('auditLogs', auditLogs), [auditLogs]);
 
@@ -217,6 +225,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       'paymentSettings',
       'whatsappSettings',
       'websiteSettings',
+      'adsterraSettings',
       'supportTickets',
       'auditLogs'
     ];
@@ -239,6 +248,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             if (p === 'paymentSettings') setPaymentSettings(sanitizePaymentSettings(val));
             if (p === 'whatsappSettings') setWhatsappSettings(val);
             if (p === 'websiteSettings') setWebsiteSettings(val);
+            if (p === 'adsterraSettings') setAdsterraSettings(val);
             if (p === 'supportTickets') setSupportTickets(val);
             if (p === 'auditLogs') setAuditLogs(val);
           }
@@ -945,6 +955,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  const updateAdsterraSettings = (settings: AdsterraSettings) => {
+    setAdsterraSettings(settings);
+    addAuditLog('UPDATE_ADSTERRA', 'Updated Global Adsterra Banner Code & Settings');
+  };
+
   const adjustUserBalance = (userId: string, amount: number, reason: string) => {
     const target = users.find(u => u.id === userId);
     if (!target) return;
@@ -1048,6 +1063,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         paymentSettings,
         whatsappSettings,
         websiteSettings,
+        adsterraSettings,
         supportTickets,
         auditLogs,
         activeTab,
@@ -1076,6 +1092,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updatePaymentSettings,
         updateWhatsAppSettings,
         updateWebsiteSettings,
+        updateAdsterraSettings,
         toggleUserBlock,
         adjustUserBalance,
         createSupportTicket,

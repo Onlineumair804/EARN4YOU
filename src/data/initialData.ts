@@ -10,7 +10,8 @@ import {
   WalletTransaction,
   UserPackage,
   SupportTicket,
-  AuditLog
+  AuditLog,
+  AdsterraSettings
 } from '../types';
 
 export const INITIAL_PACKAGES: Package[] = [
@@ -198,6 +199,12 @@ export const INITIAL_WHATSAPP_SETTINGS: WhatsAppSettings = {
   channelDescription: 'Join our verified WhatsApp Channel to receive daily task links, payment withdrawal proof receipts, emergency announcements, and live 24/7 admin assistance.',
   showChannel: true
 };
+
+export const INITIAL_ADSTERRA_SETTINGS: AdsterraSettings = {
+  bannerCode: '<div style="text-align:center; padding:10px; background:#0f172a; border:1px dashed #f59e0b; color:#fbbf24; font-size:11px; border-radius:8px;">Adsterra Global Banner Ad (Managed via Admin Panel &gt; Ad Management)</div>',
+  enabled: true
+};
+
 
 export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
   siteName: 'EARN4YOU',

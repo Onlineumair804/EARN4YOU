@@ -39,6 +39,7 @@ import { AdminSupportManagement } from './components/AdminPanel/AdminSupportMana
 import { AdminAuditLogs } from './components/AdminPanel/AdminAuditLogs';
 import { AdminFirebaseBlueprint } from './components/AdminPanel/AdminFirebaseBlueprint';
 import { AdminPaymentMethodsManager } from './components/AdminPanel/AdminPaymentMethodsManager';
+import { AdminAdsManagement } from './components/AdminPanel/AdminAdsManagement';
 
 // Auth Modals
 import { LoginModal } from './components/Auth/LoginModal';
@@ -68,7 +69,8 @@ import {
   Mail,
   AlertCircle,
   Crown,
-  QrCode
+  QrCode,
+  Megaphone
 } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
@@ -158,6 +160,7 @@ const MainAppContent: React.FC = () => {
     { id: 'admin-deposits', label: 'Deposit Requests', icon: ArrowDownLeft, count: pendingDeposits },
     { id: 'admin-withdrawals', label: 'Withdrawal Approvals', icon: ArrowUpRight, count: pendingWithdrawals },
     { id: 'admin-tasks', label: '30s YouTube Tasks', icon: Play },
+    { id: 'admin-ads', label: 'Ad Management', icon: Megaphone },
     { id: 'admin-packages', label: 'Package Management', icon: Package },
     { id: 'admin-users', label: 'All Users & Wallets', icon: Users },
     { id: 'admin-payment-methods', label: 'Payment Methods & QR', icon: QrCode },
@@ -390,6 +393,7 @@ const MainAppContent: React.FC = () => {
               {activeTab === 'admin-deposits' && <AdminDepositManagement />}
               {activeTab === 'admin-withdrawals' && <AdminWithdrawalManagement />}
               {activeTab === 'admin-tasks' && <AdminTaskManagement />}
+              {activeTab === 'admin-ads' && <AdminAdsManagement />}
               {activeTab === 'admin-payment-methods' && <AdminPaymentMethodsManager />}
               {activeTab === 'admin-settings' && <AdminSettings />}
               {activeTab === 'admin-support' && <AdminSupportManagement />}
