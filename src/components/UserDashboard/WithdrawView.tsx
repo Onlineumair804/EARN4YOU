@@ -170,7 +170,7 @@ export const WithdrawView: React.FC = () => {
                 value={accountHolderName}
                 onChange={e => setAccountHolderName(e.target.value)}
                 required
-                placeholder="e.g. Syed Umair"
+                placeholder="e.g. Account Name"
                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-white font-medium text-sm outline-none transition"
               />
             </div>
@@ -185,7 +185,7 @@ export const WithdrawView: React.FC = () => {
                 value={accountNumber}
                 onChange={e => setAccountNumber(e.target.value)}
                 required
-                placeholder="e.g. 03051234567"
+                placeholder="e.g. Account Number"
                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-white font-mono font-bold text-sm outline-none transition"
               />
             </div>
