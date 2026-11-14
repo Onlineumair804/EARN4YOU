@@ -167,7 +167,7 @@ export const AdminPaymentMethodsManager: React.FC = () => {
                         [m.key]: { ...config, accountNumber: e.target.value }
                       })
                     }
-                    placeholder="e.g. 03049871234 or PK36MEZN..."
+                    placeholder="e.g. Account number or PK36MEZN..."
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-white"
                   />
                 </div>
