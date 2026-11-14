@@ -118,7 +118,7 @@ export const ProfileSettingsView: React.FC = () => {
                 type="text"
                 value={accountHolderName}
                 onChange={e => setAccountHolderName(e.target.value)}
-                placeholder="e.g. Syed Umair"
+                placeholder="e.g. account name"
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white"
               />
             </div>
@@ -132,7 +132,7 @@ export const ProfileSettingsView: React.FC = () => {
                   type="text"
                   value={easypaisaNumber}
                   onChange={e => setEasypaisaNumber(e.target.value)}
-                  placeholder="e.g. 03051234567"
+                  placeholder="e.g. Account Number"
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-white"
                 />
               </div>
