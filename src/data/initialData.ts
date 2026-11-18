@@ -16,60 +16,18 @@ import {
 
 export const INITIAL_PACKAGES: Package[] = [
   {
-    id: 'pkg-vip-1',
-    name: 'VIP 1',
+    id: 'pkg-fixed-plan',
+    name: 'FIXED PLAN',
     price: 500,
-    dailyTaskLimit: 2,
-    proposedReturnRate: 2,
-    dailyEarningEst: 10,
-    description: 'Entry-level starter package for new members. Complete 2 daily 30-second YouTube tasks.',
-    durationDays: 30,
-    status: 'active',
-    minPurchase: 1,
-    maxPurchase: 1,
-    badgeColor: 'from-amber-600 to-amber-700'
-  },
-  {
-    id: 'pkg-vip-2',
-    name: 'VIP 2',
-    price: 1000,
     dailyTaskLimit: 5,
     proposedReturnRate: 2,
-    dailyEarningEst: 20,
-    description: 'Popular high-frequency package with 5 daily 30s tasks and steady rewards.',
+    dailyEarningEst: 10,
+    description: 'Single Fixed Plan: Invest any custom amount between PKR 500 and PKR 50,000 and earn daily promotional rewards (2% daily) via 30-second YouTube tasks.',
     durationDays: 30,
     status: 'active',
-    minPurchase: 1,
-    maxPurchase: 2,
-    badgeColor: 'from-blue-600 to-cyan-700'
-  },
-  {
-    id: 'pkg-vip-3',
-    name: 'VIP 3',
-    price: 2500,
-    dailyTaskLimit: 10,
-    proposedReturnRate: 3,
-    dailyEarningEst: 75,
-    description: 'Gold level tier with 10 high-paying daily tasks and priority withdrawal processing.',
-    durationDays: 30,
-    status: 'active',
-    minPurchase: 1,
-    maxPurchase: 3,
-    badgeColor: 'from-amber-400 to-yellow-600'
-  },
-  {
-    id: 'pkg-vip-4',
-    name: 'VIP 4',
-    price: 5000,
-    dailyTaskLimit: 15,
-    proposedReturnRate: 4,
-    dailyEarningEst: 200,
-    description: 'Maximum elite VIP package. Up to 15 daily YouTube watch & subscribe tasks.',
-    durationDays: 30,
-    status: 'active',
-    minPurchase: 1,
-    maxPurchase: 5,
-    badgeColor: 'from-purple-600 to-pink-600'
+    minPurchase: 500,
+    maxPurchase: 50000,
+    badgeColor: 'from-emerald-500 to-teal-600'
   }
 ];
 
@@ -187,8 +145,8 @@ export const INITIAL_PAYMENT_SETTINGS: PaymentSettings = {
   },
   minDeposit: 500,
   maxDeposit: 100000,
-  minWithdrawal: 300,
-  maxWithdrawal: 50000,
+  minWithdrawal: 50,
+  maxWithdrawal: 5000,
   withdrawalFeePercentage: 5,
   withdrawalProcessingTime: '30 Minutes - 4 Hours'
 };

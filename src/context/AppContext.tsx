@@ -69,7 +69,7 @@ interface AppContextType {
   submitDeposit: (method: string, amount: number, trxId: string, screenshotUrl?: string) => { success: boolean; message: string };
   approveDeposit: (depositId: string) => { success: boolean; message: string };
   rejectDeposit: (depositId: string, reason: string) => { success: boolean; message: string };
-  purchasePackage: (packageId: string) => { success: boolean; message: string };
+  purchasePackage: (packageId: string, customAmount?: number) => { success: boolean; message: string };
   submitWithdrawal: (method: 'Easypaisa' | 'JazzCash', accountName: string, accountNum: string, amount: number) => { success: boolean; message: string };
   approveWithdrawal: (withdrawalId: string, ref?: string) => { success: boolean; message: string };
   rejectWithdrawal: (withdrawalId: string, reason: string) => { success: boolean; message: string };
@@ -540,7 +540,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Manual Package Purchase Flow
-  const purchasePackage = (packageId: string) => {
+  const purchasePackage = (packageId: string, customAmount?: number) => {
     if (!currentUser) return { success: false, message: 'Please log in to purchase a package.' };
     if (currentUser.status === 'blocked') return { success: false, message: 'Account is blocked.' };
 
@@ -549,11 +549,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { success: false, message: 'Selected package is currently inactive or unavailable.' };
     }
 
+    const finalPrice = customAmount && customAmount >= 500 && customAmount <= 50000 ? customAmount : pkg.price;
+
+    if (finalPrice < 500 || finalPrice > 50000) {
+      return { success: false, message: 'Fixed Plan amount must be between PKR 500 and PKR 50,000.' };
+    }
+
     const wallet = getUserWallet(currentUser.id);
-    if (wallet.availableBalance < pkg.price) {
+    if (wallet.availableBalance < finalPrice) {
       return {
         success: false,
-        message: `Insufficient balance! Package price is Rs. ${pkg.price.toLocaleString()}, but your available balance is Rs. ${wallet.availableBalance.toLocaleString()}. Please deposit funds first.`
+        message: `Insufficient balance! Plan amount is Rs. ${finalPrice.toLocaleString()}, but your available balance is Rs. ${wallet.availableBalance.toLocaleString()}. Please deposit funds first.`
       };
     }
 
@@ -562,11 +568,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       referenceId: `TRX-${Math.floor(10000 + Math.random() * 90000)}`,
       userId: currentUser.id,
       type: 'package_purchase',
-      amount: -pkg.price,
-      balanceAfter: wallet.availableBalance - pkg.price,
+      amount: -finalPrice,
+      balanceAfter: wallet.availableBalance - finalPrice,
       date: new Date().toISOString(),
       status: 'completed',
-      description: `Purchased ${pkg.name} Package (${pkg.durationDays} Days, ${pkg.dailyTaskLimit} Daily Tasks)`
+      description: `Activated Fixed Plan with Rs. ${finalPrice.toLocaleString()} (${pkg.durationDays} Days, 2% Daily Return)`
     };
 
     const today = new Date().toISOString().split('T')[0];
@@ -575,8 +581,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: `upkg-${Date.now()}`,
       userId: currentUser.id,
       packageId: pkg.id,
-      packageName: pkg.name,
-      price: pkg.price,
+      packageName: `Fixed Plan (Rs. ${finalPrice.toLocaleString()})`,
+      price: finalPrice,
       dailyTaskLimit: pkg.dailyTaskLimit,
       proposedReturnRate: pkg.proposedReturnRate,
       purchaseDate: new Date().toISOString(),
