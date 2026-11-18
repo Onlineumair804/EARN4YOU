@@ -262,7 +262,7 @@ export const AdminDashboardOverview: React.FC = () => {
             <span>Payment & WhatsApp Config</span>
           </div>
           <p className="text-xs text-slate-400">
-            Configure Easypaisa, JazzCash, NayaPay receiving numbers, WhatsApp channel URL, and 3-level commissions.
+            Configure Easypaisa, JazzCash receiving numbers, WhatsApp channel URL, and 3-level commissions.
           </p>
         </div>
       </div>

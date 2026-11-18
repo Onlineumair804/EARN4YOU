@@ -109,7 +109,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onJoinClick }) => {
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-white">Fast Transactions</h4>
-              <p className="text-[11px] text-slate-400">Easypaisa, JazzCash, NayaPay</p>
+              <p className="text-[11px] text-slate-400">Easypaisa, JazzCash</p>
             </div>
           </div>
 
