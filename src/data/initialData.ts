@@ -19,11 +19,11 @@ export const INITIAL_PACKAGES: Package[] = [
     id: 'pkg-fixed-plan',
     name: 'FIXED PLAN',
     price: 500,
-    dailyTaskLimit: 5,
+    dailyTaskLimit: 0,
     proposedReturnRate: 2,
     dailyEarningEst: 10,
-    description: 'Single Fixed Plan: Invest any custom amount between PKR 500 and PKR 50,000 and earn daily promotional rewards (2% daily) via 30-second YouTube tasks.',
-    durationDays: 30,
+    description: 'Single Fixed Plan: Invest any custom amount between PKR 500 and PKR 50,000 for 365 Days and earn automated daily 2% profit returns.',
+    durationDays: 365,
     status: 'active',
     minPurchase: 500,
     maxPurchase: 50000,
@@ -174,7 +174,9 @@ export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
   level2CommissionRate: 3,
   level3CommissionRate: 2,
   referralSystemEnabled: true,
-  autoApproveTasks: true
+  autoApproveTasks: true,
+  rewardProgramEnabled: true,
+  promotionalRewardRate: 2
 };
 
 export const INITIAL_ADMIN_USER: User = {

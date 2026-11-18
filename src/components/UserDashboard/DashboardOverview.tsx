@@ -231,77 +231,34 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onStartTas
         </div>
       </div>
 
-      {/* Featured 30-Second YouTube Task Banner (Crucial user requirement) */}
+      {/* Featured Fixed Plan Investment Banner */}
       <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0d1630] via-[#091124] to-[#121c3b] border border-amber-500/30 shadow-xl relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
             <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-red-600 text-white font-extrabold text-[10px] tracking-wide uppercase flex items-center space-x-1">
-                <Play className="w-2.5 h-2.5 fill-white" />
-                <span>30-Second Video Tasks</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-extrabold text-[10px] tracking-wide uppercase flex items-center space-x-1">
+                <Sparkles className="w-3 h-3" />
+                <span>Single Fixed Plan System</span>
               </span>
               <span className="text-xs text-amber-300 font-bold">
-                Daily Limit: {tasksDoneToday}/{totalDailyTaskLimit} Completed
+                Daily Return: 2% Profit
               </span>
             </div>
             <h3 className="text-xl font-extrabold text-white">
-              Watch Sponsored Videos for 30s & Earn Direct Wallet Cash
+              Invest Between PKR 500 & PKR 50,000 & Earn Daily 2% Profit
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Open active YouTube tasks directly inside the website viewer. After 30 seconds of watch time, the system will automatically credit your wallet according to your VIP package quota!
+              Activate the Fixed Plan with your custom amount. Enjoy steady, automated daily profit returns credited directly to your wallet every 24 hours.
             </p>
-
-            {/* Task quota progress bar */}
-            <div className="pt-2">
-              <div className="flex justify-between text-xs text-slate-400 mb-1">
-                <span>Today's Task Progress</span>
-                <span className="font-bold text-amber-400">
-                  {totalDailyTaskLimit > 0
-                    ? `${Math.round((tasksDoneToday / totalDailyTaskLimit) * 100)}%`
-                    : 'No Active Package'}
-                </span>
-              </div>
-              <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                <div
-                  className="h-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500"
-                  style={{
-                    width: `${totalDailyTaskLimit > 0 ? (tasksDoneToday / totalDailyTaskLimit) * 100 : 0}%`
-                  }}
-                />
-              </div>
-            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row lg:flex-col items-center gap-3 shrink-0">
-            {totalDailyTaskLimit === 0 ? (
-              <button
-                onClick={() => setActiveTab('packages')}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl gold-gradient-btn text-slate-950 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg cursor-pointer"
-              >
-                <Package className="w-4 h-4 text-slate-950" />
-                <span>Activate VIP Package First</span>
-              </button>
-            ) : tasksRemainingToday > 0 ? (
-              <button
-                onClick={() => setActiveTab('available-tasks')}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl gold-gradient-btn text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/30 cursor-pointer animate-pulse-gold"
-              >
-                <Play className="w-4 h-4 fill-slate-950" />
-                <span>Start Today's Tasks ({tasksRemainingToday} Left)</span>
-              </button>
-            ) : (
-              <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>All daily tasks completed for today!</span>
-              </div>
-            )}
-
             <button
-              onClick={() => setActiveTab('my-tasks')}
-              className="text-xs text-slate-400 hover:text-amber-400 font-medium flex items-center space-x-1"
+              onClick={() => setActiveTab('packages')}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl gold-gradient-btn text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/30 cursor-pointer"
             >
-              <span>View Tasks History</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <Package className="w-4 h-4 text-slate-950" />
+              <span>Open Fixed Plan (2% Daily)</span>
             </button>
           </div>
         </div>

@@ -8,7 +8,8 @@ import {
   Shield,
   CheckCircle2,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
 
 export const AdminSettings: React.FC = () => {
@@ -339,6 +340,47 @@ export const AdminSettings: React.FC = () => {
                 }
                 className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 5: REWARDS CONTROL (Reward Program Enable/Disable & Promotional Reward Rate) */}
+        <div className="p-6 rounded-2xl bg-slate-900/80 border border-amber-500/30 shadow-lg space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Rewards Control (Promotional & Daily Return)</span>
+            </h3>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <span className="text-xs text-slate-400">Reward Program Enable/Disable:</span>
+              <input
+                type="checkbox"
+                checked={webState.rewardProgramEnabled}
+                onChange={e => setWebState({ ...webState, rewardProgramEnabled: e.target.checked })}
+                className="w-4 h-4 rounded text-amber-500"
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-amber-400 uppercase mb-1">
+                Promotional Reward Rate (%)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                required
+                value={webState.promotionalRewardRate}
+                onChange={e => setWebState({ ...webState, promotionalRewardRate: parseFloat(e.target.value) || 0 })}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-amber-400 font-bold"
+                placeholder="e.g. 2"
+              />
+              <p className="text-[11px] text-slate-500 mt-1">
+                Sets the daily promotional profit rate for Fixed Plan investments (synced to Firebase Realtime Database for server scripts).
+              </p>
             </div>
           </div>
         </div>

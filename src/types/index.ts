@@ -202,6 +202,8 @@ export interface WebsiteSettings {
   level3CommissionRate: number; // default 2%
   referralSystemEnabled: boolean;
   autoApproveTasks: boolean;
+  rewardProgramEnabled: boolean; // default true
+  promotionalRewardRate: number; // default 2%
 }
 
 export interface SupportTicketMessage {

@@ -11,8 +11,7 @@ import {
   Check,
   Upload,
   AlertCircle,
-  CheckCircle2,
-  QrCode
+  CheckCircle2
 } from 'lucide-react';
 
 export const DepositView: React.FC = () => {
@@ -22,9 +21,7 @@ export const DepositView: React.FC = () => {
 
   const availableMethods = [
     { key: 'Easypaisa', label: 'Easypaisa', config: currentPaymentSettings.easypaisa || INITIAL_PAYMENT_SETTINGS.easypaisa },
-    { key: 'JazzCash', label: 'JazzCash', config: currentPaymentSettings.jazzcash || INITIAL_PAYMENT_SETTINGS.jazzcash },
-    { key: 'Bank Transfer', label: 'Bank Transfer', config: currentPaymentSettings.bankTransfer || INITIAL_PAYMENT_SETTINGS.bankTransfer },
-    { key: 'Custom QR Payment', label: 'Custom QR', config: currentPaymentSettings.customQr || INITIAL_PAYMENT_SETTINGS.customQr }
+    { key: 'JazzCash', label: 'JazzCash', config: currentPaymentSettings.jazzcash || INITIAL_PAYMENT_SETTINGS.jazzcash }
   ].filter(m => m.config?.enabled);
 
   const [selectedMethod, setSelectedMethod] = useState<string>(
@@ -145,23 +142,6 @@ export const DepositView: React.FC = () => {
                 <span className="text-xs text-slate-400 font-semibold">Payment Receiver</span>
                 <span className="text-xs font-bold text-amber-400">{selectedMethod}</span>
               </div>
-
-              {/* QR Code if available */}
-              {currentAccount?.qrCodeUrl && (
-                <div className="flex flex-col items-center py-2 bg-slate-900/60 rounded-xl border border-slate-800">
-                  <div className="w-32 h-32 bg-white p-2 rounded-xl border border-amber-500/30 flex items-center justify-center">
-                    <img
-                      src={currentAccount.qrCodeUrl}
-                      alt="Payment QR Code"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <span className="text-[10px] text-amber-400 mt-1 flex items-center space-x-1">
-                    <QrCode className="w-3 h-3" />
-                    <span>Scan QR code to pay instantly</span>
-                  </span>
-                </div>
-              )}
 
               {/* Account Number */}
               <div>
