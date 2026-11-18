@@ -45,6 +45,7 @@ import { AdminAdsManagement } from './components/AdminPanel/AdminAdsManagement';
 import { LoginModal } from './components/Auth/LoginModal';
 import { RegisterModal } from './components/Auth/RegisterModal';
 import { ForgotPasswordModal } from './components/Auth/ForgotPasswordModal';
+import { AnnouncementModal } from './components/AnnouncementModal';
 
 import {
   LayoutDashboard,
@@ -437,6 +438,8 @@ const MainAppContent: React.FC = () => {
           setLoginOpen(true);
         }}
       />
+
+      <AnnouncementModal />
     </div>
   );
 };

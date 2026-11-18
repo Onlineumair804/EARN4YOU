@@ -204,6 +204,10 @@ export interface WebsiteSettings {
   autoApproveTasks: boolean;
   rewardProgramEnabled: boolean; // default true
   promotionalRewardRate: number; // default 2%
+  announcementEnabled: boolean;
+  announcementTitle: string;
+  announcementMessage: string;
+  announcementImageUrl?: string;
 }
 
 export interface SupportTicketMessage {

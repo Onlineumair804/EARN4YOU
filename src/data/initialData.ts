@@ -145,7 +145,7 @@ export const INITIAL_PAYMENT_SETTINGS: PaymentSettings = {
   },
   minDeposit: 500,
   maxDeposit: 100000,
-  minWithdrawal: 50,
+  minWithdrawal: 200,
   maxWithdrawal: 5000,
   withdrawalFeePercentage: 5,
   withdrawalProcessingTime: '30 Minutes - 4 Hours'
@@ -176,7 +176,11 @@ export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
   referralSystemEnabled: true,
   autoApproveTasks: true,
   rewardProgramEnabled: true,
-  promotionalRewardRate: 2
+  promotionalRewardRate: 2,
+  announcementEnabled: true,
+  announcementTitle: 'Welcome to EARN4YOU!',
+  announcementMessage: 'Invest securely in our 365-Day Fixed Investment Plan and earn 2% daily profit rewards. Join our official WhatsApp channel for updates and support.',
+  announcementImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80'
 };
 
 export const INITIAL_ADMIN_USER: User = {

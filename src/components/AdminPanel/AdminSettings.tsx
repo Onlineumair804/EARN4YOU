@@ -9,7 +9,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Megaphone
 } from 'lucide-react';
 
 export const AdminSettings: React.FC = () => {
@@ -381,6 +382,66 @@ export const AdminSettings: React.FC = () => {
               <p className="text-[11px] text-slate-500 mt-1">
                 Sets the daily promotional profit rate for Fixed Plan investments (synced to Firebase Realtime Database for server scripts).
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 6: ANNOUNCEMENT SETTINGS (Login Popup Configuration) */}
+        <div className="p-6 rounded-2xl bg-slate-900/80 border border-amber-500/30 shadow-lg space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+              <Megaphone className="w-4 h-4 text-amber-400" />
+              <span>Login Announcement Popup Settings</span>
+            </h3>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <span className="text-xs text-slate-400">Popup ON/OFF:</span>
+              <input
+                type="checkbox"
+                checked={webState.announcementEnabled}
+                onChange={e => setWebState({ ...webState, announcementEnabled: e.target.checked })}
+                className="w-4 h-4 rounded text-amber-500"
+              />
+            </label>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
+                Popup Title
+              </label>
+              <input
+                type="text"
+                required
+                value={webState.announcementTitle}
+                onChange={e => setWebState({ ...webState, announcementTitle: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white font-bold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
+                Popup Message Description
+              </label>
+              <textarea
+                rows={3}
+                required
+                value={webState.announcementMessage}
+                onChange={e => setWebState({ ...webState, announcementMessage: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
+                Popup Banner Image URL
+              </label>
+              <input
+                type="text"
+                value={webState.announcementImageUrl || ''}
+                onChange={e => setWebState({ ...webState, announcementImageUrl: e.target.value })}
+                placeholder="https://images.unsplash.com/..."
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-amber-400 font-mono"
+              />
             </div>
           </div>
         </div>
