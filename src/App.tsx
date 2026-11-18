@@ -140,18 +140,20 @@ const MainAppContent: React.FC = () => {
 
   const userNavItems = [
     { id: 'dashboard', label: '1. Dashboard', icon: LayoutDashboard },
-    { id: 'packages', label: '2. Fixed Plan (2% Daily)', icon: Package, badge: 'ACTIVE' },
-    { id: 'my-packages', label: '3. My Active Plans', icon: Layers },
-    { id: 'deposit', label: '4. Deposit', icon: ArrowDownLeft },
-    { id: 'withdraw', label: '5. Withdraw', icon: ArrowUpRight },
-    { id: 'wallet', label: '6. My Wallet', icon: Wallet },
-    { id: 'transactions', label: '7. Transaction History', icon: History },
-    { id: 'referral', label: '8. Referral Program', icon: Users },
-    { id: 'team', label: '9. My Team (3 Levels)', icon: Layers },
-    { id: 'earnings', label: '10. Earnings History', icon: TrendingUp },
-    { id: 'whatsapp', label: '11. WhatsApp Channel', icon: MessageCircle },
-    { id: 'support', label: '12. Support Desk', icon: HelpCircle },
-    { id: 'profile', label: '13. Profile Settings', icon: Settings }
+    { id: 'packages', label: '2. VIP Packages', icon: Package },
+    { id: 'my-packages', label: '3. My VIP Packages', icon: Layers },
+    { id: 'available-tasks', label: '4. Available Tasks (30s)', icon: Play, badge: 'HOT' },
+    { id: 'my-tasks', label: '5. My Tasks History', icon: CheckSquare },
+    { id: 'deposit', label: '6. Deposit', icon: ArrowDownLeft },
+    { id: 'withdraw', label: '7. Withdraw', icon: ArrowUpRight },
+    { id: 'wallet', label: '8. My Wallet', icon: Wallet },
+    { id: 'transactions', label: '9. Transaction History', icon: History },
+    { id: 'referral', label: '10. Referral Program', icon: Users },
+    { id: 'team', label: '11. My Team (3 Levels)', icon: Layers },
+    { id: 'earnings', label: '12. Earnings History', icon: TrendingUp },
+    { id: 'whatsapp', label: '13. WhatsApp Channel', icon: MessageCircle },
+    { id: 'support', label: '14. Support Desk', icon: HelpCircle },
+    { id: 'profile', label: '15. Profile Settings', icon: Settings }
   ];
 
   const adminNavItems = [
@@ -366,10 +368,12 @@ const MainAppContent: React.FC = () => {
         <div>
           {/* User Tab Views */}
           {activeTab === 'dashboard' && (
-            <DashboardOverview onStartTaskClick={() => setActiveTab('packages')} />
+            <DashboardOverview onStartTaskClick={() => setActiveTab('available-tasks')} />
           )}
           {activeTab === 'packages' && <PackagesView />}
           {activeTab === 'my-packages' && <MyPackagesView />}
+          {activeTab === 'available-tasks' && <AvailableTasksView />}
+          {activeTab === 'my-tasks' && <MyTasksView />}
           {activeTab === 'deposit' && <DepositView />}
           {activeTab === 'withdraw' && <WithdrawView />}
           {activeTab === 'wallet' && <WalletView />}

@@ -231,35 +231,45 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onStartTas
         </div>
       </div>
 
-      {/* Featured Fixed Plan Investment Banner */}
+      {/* Featured 30-Second YouTube Task Banner */}
       <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0d1630] via-[#091124] to-[#121c3b] border border-amber-500/30 shadow-xl relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
             <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-extrabold text-[10px] tracking-wide uppercase flex items-center space-x-1">
-                <Sparkles className="w-3 h-3" />
-                <span>Single Fixed Plan System</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-red-600 text-white font-extrabold text-[10px] tracking-wide uppercase flex items-center space-x-1">
+                <Play className="w-2.5 h-2.5 fill-white" />
+                <span>30-Second Video Tasks</span>
               </span>
               <span className="text-xs text-amber-300 font-bold">
-                Daily Return: 2% Profit
+                Daily Limit: {tasksDoneToday}/{totalDailyTaskLimit} Completed
               </span>
             </div>
             <h3 className="text-xl font-extrabold text-white">
-              Invest Between PKR 500 & PKR 50,000 & Earn Daily 2% Profit
+              Watch Sponsored Videos for 30s & Earn Direct Wallet Cash
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Activate the Fixed Plan with your custom amount. Enjoy steady, automated daily profit returns credited directly to your wallet every 24 hours.
+              Open active YouTube tasks linked to your VIP packages. After 30 seconds of watch time, the system will credit your wallet instantly!
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row lg:flex-col items-center gap-3 shrink-0">
-            <button
-              onClick={() => setActiveTab('packages')}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl gold-gradient-btn text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/30 cursor-pointer"
-            >
-              <Package className="w-4 h-4 text-slate-950" />
-              <span>Open Fixed Plan (2% Daily)</span>
-            </button>
+            {totalDailyTaskLimit === 0 ? (
+              <button
+                onClick={() => setActiveTab('packages')}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl gold-gradient-btn text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/30 cursor-pointer"
+              >
+                <Package className="w-4 h-4 text-slate-950" />
+                <span>Activate VIP Package First</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setActiveTab('available-tasks')}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl gold-gradient-btn text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/30 cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-slate-950" />
+                <span>Start VIP Tasks ({tasksRemainingToday} Left)</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
